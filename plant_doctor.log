@@ -108,3 +108,8 @@
 2025-11-10 01:34:41,177 - watchfiles.main - INFO - 1 change detected
 2025-11-10 01:34:41,579 - watchfiles.main - INFO - 1 change detected
 2025-11-10 01:34:41,931 - watchfiles.main - INFO - 1 change detected
+2025-11-10 01:34:42,333 - watchfiles.main - INFO - 1 change detected
+2025-11-10 01:34:42,684 - watchfiles.main - INFO - 11 changes detected
+2025-11-10 01:34:43,069 - watchfiles.main - INFO - 12 changes detected
+2025-11-10 01:35:12,597 - watchfiles.main - INFO - 22 changes detected
+2025-11-10 01:35:30,183 - app.routes.weather - INFO - Utilisation des données météo simulées
