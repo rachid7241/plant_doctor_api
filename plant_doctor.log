@@ -151,3 +151,90 @@
 2025-11-10 10:57:04,458 - app.routes.analysis - INFO - ============================================================
 2025-11-10 10:57:11,764 - watchfiles.main - INFO - 1 change detected
 2025-11-10 10:57:12,821 - watchfiles.main - INFO - 7 changes detected
+2025-11-10 14:26:26,038 - app.routes.weather - INFO - Utilisation des données météo simulées
+2025-11-10 14:26:31,217 - app.routes.weather - INFO - Utilisation des données météo simulées
+2025-11-10 14:26:45,072 - app.routes.analysis - INFO - ============================================================
+2025-11-10 14:26:45,080 - app.routes.analysis - INFO -    Filename: plant_image.jpg
+2025-11-10 14:26:45,080 - app.routes.analysis - INFO -    Content-Type: application/octet-stream
+2025-11-10 14:26:45,081 - app.routes.analysis - INFO -    Headers: Headers({'content-type': 'application/octet-stream', 'content-disposition': 'form-data; name="file"; filename="plant_image.jpg"'})
+2025-11-10 14:26:45,081 - app.routes.analysis - INFO -    Type MIME: application/octet-stream
+2025-11-10 14:26:45,096 - app.routes.analysis - INFO - ============================================================
+2025-11-10 14:26:56,590 - app.routes.analysis - INFO - ============================================================
+2025-11-10 14:26:56,596 - app.routes.analysis - INFO -    Filename: plant_image.jpg
+2025-11-10 14:26:56,597 - app.routes.analysis - INFO -    Content-Type: application/octet-stream
+2025-11-10 14:26:56,597 - app.routes.analysis - INFO -    Headers: Headers({'content-type': 'application/octet-stream', 'content-disposition': 'form-data; name="file"; filename="plant_image.jpg"'})
+2025-11-10 14:26:56,598 - app.routes.analysis - INFO -    Type MIME: application/octet-stream
+2025-11-10 14:26:56,610 - app.routes.analysis - INFO - ============================================================
+2025-11-10 14:34:48,148 - watchfiles.main - INFO - 4 changes detected
+2025-11-10 14:36:38,564 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:36:39,479 - watchfiles.main - INFO - 7 changes detected
+2025-11-10 14:36:56,414 - watchfiles.main - INFO - 27 changes detected
+2025-11-10 14:36:56,778 - watchfiles.main - INFO - 32 changes detected
+2025-11-10 14:36:57,134 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:36:57,496 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:36:57,861 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:36:58,227 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:36:58,595 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:36:58,947 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:36:59,362 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:36:59,764 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:00,177 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:00,579 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:00,982 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:01,396 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:01,812 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:02,228 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:02,591 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:02,995 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:03,448 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:03,813 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:04,227 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:04,645 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:05,067 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:05,483 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:05,893 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:06,258 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:06,712 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:07,114 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:07,477 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:07,893 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:08,295 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:08,703 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:09,118 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:09,532 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:09,944 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:10,362 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:10,779 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:11,196 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:11,612 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:11,976 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:12,383 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:12,793 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:13,210 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:13,612 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:14,030 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:14,432 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:14,799 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:15,201 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:15,613 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:16,020 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:16,429 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:16,832 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:17,249 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:17,663 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:18,029 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:18,483 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:18,834 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:19,237 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:19,588 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:19,969 - watchfiles.main - INFO - 22 changes detected
+2025-11-10 14:37:20,339 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:20,696 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:21,047 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:21,399 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:21,751 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:22,114 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:22,530 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:22,932 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:23,337 - watchfiles.main - INFO - 1 change detected
+2025-11-10 14:37:23,740 - watchfiles.main - INFO - 1 change detected
