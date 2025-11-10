@@ -1,161 +1,240 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+"""
+Routes d'analyse optimisées avec validation et gestion d'erreurs
+✅ Clean code, logging structuré, performance
+"""
+from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from fastapi.responses import JSONResponse
 from app.models.schemas import AnalysisResponse, DiseaseResponse
-from app.services.ml_service import ml_service  # ✅ Import du service ML
+from app.services.ml_service import ml_service, PredictionResult
 import datetime
 import logging
+from typing import Dict, Any
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+# ✅ Configuration
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+ALLOWED_CONTENT_TYPES = {'image/jpeg', 'image/jpg', 'image/png', 'image/webp'}
+
+
 @router.post("/analyze", response_model=AnalysisResponse)
 async def analyze_plant(file: UploadFile = File(...)):
     """
-    Analyse une image de plante et retourne le diagnostic
-    Utilise le service ML (réel ou simulation)
-    """
-    # Validation du fichier
-    if not file.content_type.startswith('image/'):
-        raise HTTPException(
-            status_code=400, 
-            detail="Le fichier doit être une image (JPEG, PNG)"
-        )
+    ✅ Analyse optimisée d'une image de plante
     
-    logger.info(f"🔍 Analyse d'image reçue: {file.filename}")
+    - Validation stricte des entrées
+    - Gestion d'erreurs robuste
+    - Logging structuré
+    - Performance optimisée
+    """
+    request_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    logger.info(f"📥 [{request_id}] Nouvelle requête d'analyse: {file.filename}")
     
     try:
-        # Lire les données de l'image
+        # ✅ VALIDATION 1: Type de fichier
+        if file.content_type not in ALLOWED_CONTENT_TYPES:
+            logger.warning(f"❌ [{request_id}] Type invalide: {file.content_type}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "error": "Type de fichier non supporté",
+                    "accepted_types": list(ALLOWED_CONTENT_TYPES),
+                    "received": file.content_type
+                }
+            )
+        
+        # ✅ VALIDATION 2: Lire les données
         image_data = await file.read()
+        file_size = len(image_data)
         
-        # Analyser avec le service ML (réel ou simulation)
-        ml_result = await ml_service.analyze_plant_image(image_data)
+        logger.info(f"📊 [{request_id}] Fichier reçu: {file_size / 1024:.2f} KB")
         
-        logger.info(f"✅ Analyse terminée - Maladie: {ml_result['predicted_disease']}, Confiance: {ml_result['confidence']:.2f}")
+        # ✅ VALIDATION 3: Taille du fichier
+        if file_size > MAX_FILE_SIZE:
+            logger.warning(f"❌ [{request_id}] Fichier trop grand: {file_size / 1024 / 1024:.2f} MB")
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=f"Fichier trop grand (max: {MAX_FILE_SIZE / 1024 / 1024}MB)"
+            )
         
-        # Génération de recommandations contextuelles
-        weather_impact, recommendation = generate_recommendations(ml_result["predicted_disease"])
+        if file_size < 1024:  # Moins de 1KB = suspect
+            logger.warning(f"❌ [{request_id}] Fichier trop petit: {file_size} bytes")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Fichier trop petit ou corrompu"
+            )
         
-        return AnalysisResponse(
+        # ✅ ANALYSE ML
+        logger.info(f"🔍 [{request_id}] Début analyse ML...")
+        
+        ml_result: PredictionResult = await ml_service.analyze_plant_image(image_data)
+        
+        logger.info(
+            f"✅ [{request_id}] Analyse terminée - "
+            f"Maladie: {ml_result.disease}, "
+            f"Confiance: {ml_result.confidence:.2%}"
+        )
+        
+        # ✅ GÉNÉRATION DES RECOMMANDATIONS
+        weather_impact, recommendation = generate_recommendations(
+            ml_result.disease,
+            ml_result.confidence
+        )
+        
+        # ✅ CONSTRUCTION DE LA RÉPONSE
+        response = AnalysisResponse(
             disease=DiseaseResponse(
-                name=ml_result["predicted_disease"],
-                confidence=ml_result["confidence"],
-                treatment=ml_result["recommendations"]["traitement"],
-                prevention=ml_result["recommendations"]["prevention"],
-                urgency=ml_result["recommendations"]["urgence"]
+                name=ml_result.disease,
+                confidence=ml_result.confidence,
+                treatment=ml_result.recommendations["traitement"],
+                prevention=ml_result.recommendations["prevention"],
+                urgency=ml_result.recommendations["urgence"]
             ),
             weather_impact=weather_impact,
             recommendation=recommendation,
             timestamp=datetime.datetime.now().isoformat()
         )
         
+        # ✅ LOG DE SUCCÈS
+        logger.info(f"✅ [{request_id}] Réponse envoyée avec succès")
+        
+        return response
+        
+    except HTTPException:
+        # Re-lever les exceptions HTTP
+        raise
+        
+    except ValueError as e:
+        # Erreurs de validation d'image
+        logger.error(f"❌ [{request_id}] Erreur validation: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Image invalide: {str(e)}"
+        )
+        
     except Exception as e:
-        logger.error(f"❌ Erreur lors de l'analyse: {str(e)}")
-        raise HTTPException(status_code=500, detail="Erreur interne lors de l'analyse")
+        # Erreurs inattendues
+        logger.exception(f"💥 [{request_id}] Erreur inattendue: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur interne du serveur. Réessayez plus tard."
+        )
+
 
 @router.get("/diseases")
-async def get_diseases_list():
+async def get_diseases_list() -> Dict[str, Any]:
     """
-    Retourne la liste de toutes les maladies connues
+    ✅ Retourne la liste des maladies connues
+    Avec informations sur le service ML
     """
-    # Utilise maintenant les maladies du service ML
-    maladies_burkina = ml_service.maladies_burkina
-    
-    # Transformer la structure pour l'API
-    diseases_list = []
-    for plante, maladies in maladies_burkina.items():
-        for maladie in maladies:
-            diseases_list.append({
-                "key": f"{plante}_{maladie}",
-                "name": f"{maladie.capitalize()} ({plante.capitalize()})",
-                "plante": plante,
-                "maladie": maladie
-            })
-    
-    return {
-        "count": len(diseases_list),
-        "diseases": diseases_list,
-        "mode_analyse": "ML" if ml_service.model_loaded else "SIMULATION"
-    }
+    try:
+        logger.info("📋 Récupération liste des maladies")
+        
+        maladies_burkina = ml_service.MALADIES_BURKINA
+        
+        # Transformer en liste structurée
+        diseases_list = []
+        for plante, maladies in maladies_burkina.items():
+            for maladie in maladies:
+                diseases_list.append({
+                    "key": f"{plante}_{maladie}",
+                    "name": f"{maladie.capitalize()} ({plante.capitalize()})",
+                    "plante": plante,
+                    "maladie": maladie,
+                    "has_treatment": maladie in ml_service.RECOMMENDATIONS
+                })
+        
+        return {
+            "count": len(diseases_list),
+            "diseases": diseases_list,
+            "mode_analyse": "ML" if ml_service.model_loaded else "SIMULATION",
+            "timestamp": datetime.datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Erreur récupération maladies: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur récupération des maladies"
+        )
+
 
 @router.get("/ml-status")
-async def get_ml_status():
+async def get_ml_status() -> Dict[str, Any]:
     """
-    Retourne le statut du service Machine Learning
+    ✅ Retourne le statut détaillé du service ML
     """
-    status = ml_service.get_model_status()
-    
-    return {
-        "service_ml": "🌱 PlantDoctor Burkina ML",
-        "statut": status,
-        "timestamp": datetime.datetime.now().isoformat()
-    }
+    try:
+        status_info = ml_service.get_model_status()
+        
+        return {
+            "service_ml": "🌱 PlantDoctor Burkina ML",
+            "statut": status_info,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "health": "healthy" if status_info["service_status"] == "OPERATIONAL" else "degraded"
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Erreur statut ML: {e}")
+        return {
+            "service_ml": "🌱 PlantDoctor Burkina ML",
+            "statut": {"error": str(e)},
+            "health": "unhealthy",
+            "timestamp": datetime.datetime.now().isoformat()
+        }
 
-def generate_recommendations(disease_name: str) -> tuple[str, str]:
-    """Génère des recommandations basées sur la maladie et les conditions"""
+
+def generate_recommendations(disease_name: str, confidence: float) -> tuple[str, str]:
+    """
+    ✅ Génère des recommandations contextuelles
     
-    # Recommandations météo basées sur la maladie
+    Args:
+        disease_name: Nom de la maladie détectée
+        confidence: Niveau de confiance (0-1)
+    
+    Returns:
+        (weather_impact, recommendation)
+    """
+    # Ajuster les recommandations selon la confiance
+    confidence_level = "élevée" if confidence > 0.8 else "moyenne" if confidence > 0.6 else "faible"
+    
+    # Recommandations météo par maladie
     weather_recommendations = {
-        "Rouille": (
+        "rouille": (
             "Conditions humides favorables au développement de la rouille",
-            "Traitement recommandé tôt le matin par temps sec et stable"
+            f"Traitement recommandé tôt le matin par temps sec (confiance {confidence_level})"
         ),
-        "Mildiou": (
+        "mildiou": (
             "Températures fraîches et humidité élevée - conditions idéales pour le mildiou",
-            "Appliquez le traitement en fin de journée, évitez les périodes de pluie"
+            f"Appliquez le traitement en fin de journée (confiance {confidence_level})"
         ),
-        "Charbon": (
+        "charbon": (
             "Conditions chaudes et humides favorables au charbon",
-            "Traitement préventif recommandé avant les périodes pluvieuses"
+            f"Traitement préventif urgent recommandé (confiance {confidence_level})"
         ),
-        "Cercosporiose": (
-            "Humidité persistante favorable à la cercosporiose", 
-            "Traitement efficace par temps sec après la rosée du matin"
+        "cercosporiose": (
+            "Humidité persistante favorable à la cercosporiose",
+            f"Traitement efficace par temps sec après la rosée (confiance {confidence_level})"
         ),
-        "Pucerons": (
-            "Conditions printanières favorables aux pucerons",
-            "Traitement efficace par temps calme et sec, tôt le matin"
+        "pyrale": (
+            "Surveillance accrue pendant la période de ponte",
+            f"Traitement insecticide recommandé au stade larvaire (confiance {confidence_level})"
         ),
-        "Plante Sain": (
+        "sain": (
             "Conditions optimales pour la croissance",
-            "Continuez les bonnes pratiques, surveillance régulière recommandée"
+            f"Continuez les bonnes pratiques, surveillance régulière (confiance {confidence_level})"
         )
     }
     
-    # Trouver la recommandation la plus proche
+    # Chercher la recommandation correspondante
+    disease_lower = disease_name.lower()
     for key, value in weather_recommendations.items():
-        if key.lower() in disease_name.lower():
+        if key in disease_lower:
             return value
     
-    # Fallback pour maladies inconnues
+    # Fallback
     return (
         "Conditions de croissance normales",
-        "Surveillance et pratiques culturales adaptées recommandées"
+        f"Surveillance et pratiques culturales adaptées (confiance {confidence_level})"
     )
-
-# Fonction pour sauvegarder en base de données (optionnelle)
-def save_analysis_to_db(filename: str, disease_name: str, confidence: float, treatment: str):
-    """
-    Sauvegarde l'analyse dans la base de données
-    (À décommenter quand ta base de données sera configurée)
-    """
-    try:
-        # Décommente ces lignes quand tu auras configuré ta base
-        # from app.database.database import SessionLocal, AnalysisHistory
-        # 
-        # db = SessionLocal()
-        # try:
-        #     analysis_record = AnalysisHistory(
-        #         image_filename=filename,
-        #         disease_name=disease_name,
-        #         confidence=confidence,
-        #         treatment=treatment,
-        #         location="Burkina Faso"
-        #     )
-        #     db.add(analysis_record)
-        #     db.commit()
-        #     logger.info(f"✅ Analyse sauvegardée en base: {filename}")
-        # finally:
-        #     db.close()
-        pass
-        
-    except Exception as e:
-        logger.warning(f"⚠️ Impossible de sauvegarder en base: {e}")
